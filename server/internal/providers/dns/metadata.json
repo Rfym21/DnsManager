@@ -1,0 +1,1468 @@
+[
+  {
+    "id": "aliyun",
+    "name": "阿里云",
+    "category": "dns",
+    "implemented": true,
+    "fields": [
+      {
+        "name": "AccessKeyId",
+        "label": "AccessKeyId",
+        "type": "input",
+        "required": true,
+        "secret": false,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "AccessKeySecret",
+        "label": "AccessKeySecret",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "proxy",
+        "label": "使用代理服务器",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "否"
+          },
+          {
+            "value": "1",
+            "label": "是"
+          }
+        ],
+        "visible_when": {
+          "proxy_available": "1"
+        }
+      }
+    ],
+    "capabilities": {
+      "status": true,
+      "redirect": true,
+      "logs": true,
+      "weight": false,
+      "client_pagination": false,
+      "create_domain": true,
+      "sort": true,
+      "remark": 1,
+      "groups": true,
+      "aliases": false,
+      "weight_groups": true
+    }
+  },
+  {
+    "id": "dnspod",
+    "name": "腾讯云",
+    "category": "dns",
+    "implemented": true,
+    "fields": [
+      {
+        "name": "SecretId",
+        "label": "SecretId",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "SecretKey",
+        "label": "SecretKey",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "proxy",
+        "label": "使用代理服务器",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "否"
+          },
+          {
+            "value": "1",
+            "label": "是"
+          }
+        ],
+        "visible_when": {
+          "proxy_available": "1"
+        }
+      }
+    ],
+    "capabilities": {
+      "status": true,
+      "redirect": true,
+      "logs": true,
+      "weight": true,
+      "client_pagination": false,
+      "create_domain": true,
+      "sort": true,
+      "remark": 1,
+      "groups": true,
+      "aliases": true,
+      "weight_groups": false
+    }
+  },
+  {
+    "id": "huawei",
+    "name": "华为云",
+    "category": "dns",
+    "implemented": true,
+    "fields": [
+      {
+        "name": "AccessKeyId",
+        "label": "AccessKeyId",
+        "type": "input",
+        "required": true,
+        "secret": false,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "SecretAccessKey",
+        "label": "SecretAccessKey",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "proxy",
+        "label": "使用代理服务器",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "否"
+          },
+          {
+            "value": "1",
+            "label": "是"
+          }
+        ],
+        "visible_when": {
+          "proxy_available": "1"
+        }
+      }
+    ],
+    "capabilities": {
+      "status": true,
+      "redirect": false,
+      "logs": false,
+      "weight": true,
+      "client_pagination": false,
+      "create_domain": true,
+      "sort": true,
+      "remark": 2,
+      "groups": false,
+      "aliases": false,
+      "weight_groups": false
+    }
+  },
+  {
+    "id": "baidu",
+    "name": "百度云",
+    "category": "dns",
+    "implemented": true,
+    "fields": [
+      {
+        "name": "AccessKeyId",
+        "label": "AccessKeyId",
+        "type": "input",
+        "required": true,
+        "secret": false,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "SecretAccessKey",
+        "label": "SecretAccessKey",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "proxy",
+        "label": "使用代理服务器",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "否"
+          },
+          {
+            "value": "1",
+            "label": "是"
+          }
+        ],
+        "visible_when": {
+          "proxy_available": "1"
+        }
+      }
+    ],
+    "capabilities": {
+      "status": false,
+      "redirect": false,
+      "logs": false,
+      "weight": false,
+      "client_pagination": true,
+      "create_domain": true,
+      "sort": false,
+      "remark": 2,
+      "groups": false,
+      "aliases": false,
+      "weight_groups": false
+    }
+  },
+  {
+    "id": "west",
+    "name": "西部数码",
+    "category": "dns",
+    "implemented": true,
+    "fields": [
+      {
+        "name": "username",
+        "label": "用户名",
+        "type": "input",
+        "required": true,
+        "secret": false,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "api_password",
+        "label": "API密码",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "proxy",
+        "label": "使用代理服务器",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "否"
+          },
+          {
+            "value": "1",
+            "label": "是"
+          }
+        ],
+        "visible_when": {
+          "proxy_available": "1"
+        }
+      }
+    ],
+    "capabilities": {
+      "status": true,
+      "redirect": false,
+      "logs": false,
+      "weight": false,
+      "client_pagination": false,
+      "create_domain": false,
+      "sort": false,
+      "remark": 0,
+      "groups": false,
+      "aliases": false,
+      "weight_groups": false
+    }
+  },
+  {
+    "id": "huoshan",
+    "name": "火山引擎",
+    "category": "dns",
+    "implemented": true,
+    "fields": [
+      {
+        "name": "AccessKeyId",
+        "label": "AccessKeyId",
+        "type": "input",
+        "required": true,
+        "secret": false,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "SecretAccessKey",
+        "label": "SecretAccessKey",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "proxy",
+        "label": "使用代理服务器",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "否"
+          },
+          {
+            "value": "1",
+            "label": "是"
+          }
+        ],
+        "visible_when": {
+          "proxy_available": "1"
+        }
+      }
+    ],
+    "capabilities": {
+      "status": true,
+      "redirect": false,
+      "logs": false,
+      "weight": true,
+      "client_pagination": false,
+      "create_domain": true,
+      "sort": false,
+      "remark": 2,
+      "groups": false,
+      "aliases": false,
+      "weight_groups": false
+    }
+  },
+  {
+    "id": "jdcloud",
+    "name": "京东云",
+    "category": "dns",
+    "implemented": true,
+    "fields": [
+      {
+        "name": "AccessKeyId",
+        "label": "AccessKeyId",
+        "type": "input",
+        "required": true,
+        "secret": false,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "AccessKeySecret",
+        "label": "AccessKeySecret",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "proxy",
+        "label": "使用代理服务器",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "否"
+          },
+          {
+            "value": "1",
+            "label": "是"
+          }
+        ],
+        "visible_when": {
+          "proxy_available": "1"
+        }
+      }
+    ],
+    "capabilities": {
+      "status": true,
+      "redirect": true,
+      "logs": false,
+      "weight": true,
+      "client_pagination": false,
+      "create_domain": true,
+      "sort": false,
+      "remark": 0,
+      "groups": false,
+      "aliases": false,
+      "weight_groups": false
+    }
+  },
+  {
+    "id": "dnsla",
+    "name": "DNSLA",
+    "category": "dns",
+    "implemented": true,
+    "fields": [
+      {
+        "name": "apiid",
+        "label": "APIID",
+        "type": "input",
+        "required": true,
+        "secret": false,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "apisecret",
+        "label": "API密钥",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "proxy",
+        "label": "使用代理服务器",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "否"
+          },
+          {
+            "value": "1",
+            "label": "是"
+          }
+        ],
+        "visible_when": {
+          "proxy_available": "1"
+        }
+      }
+    ],
+    "capabilities": {
+      "status": true,
+      "redirect": true,
+      "logs": false,
+      "weight": true,
+      "client_pagination": false,
+      "create_domain": true,
+      "sort": false,
+      "remark": 0,
+      "groups": false,
+      "aliases": false,
+      "weight_groups": false
+    }
+  },
+  {
+    "id": "qingcloud",
+    "name": "青云",
+    "category": "dns",
+    "implemented": true,
+    "fields": [
+      {
+        "name": "access_key_id",
+        "label": "Access Key ID",
+        "type": "input",
+        "required": true,
+        "secret": false,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "secret_access_key",
+        "label": "Secret Access Key",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "proxy",
+        "label": "使用代理服务器",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "否"
+          },
+          {
+            "value": "1",
+            "label": "是"
+          }
+        ],
+        "visible_when": {
+          "proxy_available": "1"
+        }
+      }
+    ],
+    "capabilities": {
+      "status": true,
+      "redirect": false,
+      "logs": false,
+      "weight": true,
+      "client_pagination": false,
+      "create_domain": false,
+      "sort": false,
+      "remark": 0,
+      "groups": false,
+      "aliases": false,
+      "weight_groups": false
+    }
+  },
+  {
+    "id": "bt",
+    "name": "宝塔域名",
+    "category": "dns",
+    "implemented": true,
+    "fields": [
+      {
+        "name": "AccessKey",
+        "label": "Access Key",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "SecretKey",
+        "label": "Secret Key",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "AccountID",
+        "label": "Account ID",
+        "type": "input",
+        "required": true,
+        "secret": false,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "proxy",
+        "label": "使用代理服务器",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "否"
+          },
+          {
+            "value": "1",
+            "label": "是"
+          }
+        ],
+        "visible_when": {
+          "proxy_available": "1"
+        }
+      }
+    ],
+    "capabilities": {
+      "status": true,
+      "redirect": false,
+      "logs": false,
+      "weight": true,
+      "client_pagination": false,
+      "create_domain": true,
+      "sort": false,
+      "remark": 2,
+      "groups": false,
+      "aliases": false,
+      "weight_groups": false
+    }
+  },
+  {
+    "id": "cloudflare",
+    "name": "Cloudflare",
+    "category": "dns",
+    "implemented": true,
+    "fields": [
+      {
+        "name": "email",
+        "label": "邮箱地址",
+        "type": "input",
+        "required": false,
+        "secret": false,
+        "default": "",
+        "placeholder": "",
+        "visible_when": {
+          "auth": "0"
+        }
+      },
+      {
+        "name": "apikey",
+        "label": "API密钥/令牌",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "auth",
+        "label": "认证方式",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "API密钥"
+          },
+          {
+            "value": "1",
+            "label": "API令牌"
+          }
+        ]
+      },
+      {
+        "name": "proxy",
+        "label": "使用代理服务器",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "否"
+          },
+          {
+            "value": "1",
+            "label": "是"
+          }
+        ],
+        "visible_when": {
+          "proxy_available": "1"
+        }
+      }
+    ],
+    "capabilities": {
+      "status": true,
+      "redirect": false,
+      "logs": false,
+      "weight": false,
+      "client_pagination": false,
+      "create_domain": true,
+      "sort": true,
+      "remark": 2,
+      "groups": false,
+      "aliases": false,
+      "weight_groups": false
+    }
+  },
+  {
+    "id": "aws",
+    "name": "AWS Route 53",
+    "category": "dns",
+    "implemented": true,
+    "fields": [
+      {
+        "name": "AccessKeyId",
+        "label": "AccessKeyId",
+        "type": "input",
+        "required": true,
+        "secret": false,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "SecretAccessKey",
+        "label": "SecretAccessKey",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "proxy",
+        "label": "使用代理服务器",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "否"
+          },
+          {
+            "value": "1",
+            "label": "是"
+          }
+        ],
+        "visible_when": {
+          "proxy_available": "1"
+        }
+      }
+    ],
+    "capabilities": {
+      "status": false,
+      "redirect": false,
+      "logs": false,
+      "weight": false,
+      "client_pagination": true,
+      "create_domain": true,
+      "sort": false,
+      "remark": 0,
+      "groups": false,
+      "aliases": false,
+      "weight_groups": false
+    }
+  },
+  {
+    "id": "namesilo",
+    "name": "NameSilo",
+    "category": "dns",
+    "implemented": true,
+    "fields": [
+      {
+        "name": "username",
+        "label": "账户名",
+        "type": "input",
+        "required": true,
+        "secret": false,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "apikey",
+        "label": "API Key",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "proxy",
+        "label": "使用代理服务器",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "否"
+          },
+          {
+            "value": "1",
+            "label": "是"
+          }
+        ],
+        "visible_when": {
+          "proxy_available": "1"
+        }
+      }
+    ],
+    "capabilities": {
+      "status": false,
+      "redirect": false,
+      "logs": false,
+      "weight": false,
+      "client_pagination": true,
+      "create_domain": false,
+      "sort": false,
+      "remark": 0,
+      "groups": false,
+      "aliases": false,
+      "weight_groups": false
+    }
+  },
+  {
+    "id": "henet",
+    "name": "HE DNS",
+    "category": "dns",
+    "implemented": true,
+    "fields": [
+      {
+        "name": "username",
+        "label": "用户名/邮箱",
+        "type": "input",
+        "required": true,
+        "secret": false,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "password",
+        "label": "密码",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "proxy",
+        "label": "使用代理服务器",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "否"
+          },
+          {
+            "value": "1",
+            "label": "是"
+          }
+        ],
+        "visible_when": {
+          "proxy_available": "1"
+        }
+      }
+    ],
+    "capabilities": {
+      "status": false,
+      "redirect": false,
+      "logs": false,
+      "weight": false,
+      "client_pagination": true,
+      "create_domain": false,
+      "sort": false,
+      "remark": 0,
+      "groups": false,
+      "aliases": false,
+      "weight_groups": false
+    }
+  },
+  {
+    "id": "spaceship",
+    "name": "Spaceship",
+    "category": "dns",
+    "implemented": true,
+    "fields": [
+      {
+        "name": "apikey",
+        "label": "API Key",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "apisecret",
+        "label": "API Secret",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "proxy",
+        "label": "使用代理服务器",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "否"
+          },
+          {
+            "value": "1",
+            "label": "是"
+          }
+        ],
+        "visible_when": {
+          "proxy_available": "1"
+        }
+      }
+    ],
+    "capabilities": {
+      "status": false,
+      "redirect": true,
+      "logs": false,
+      "weight": false,
+      "client_pagination": false,
+      "create_domain": false,
+      "sort": false,
+      "remark": 0,
+      "groups": false,
+      "aliases": false,
+      "weight_groups": false
+    }
+  },
+  {
+    "id": "powerdns",
+    "name": "PowerDNS",
+    "category": "dns",
+    "implemented": true,
+    "fields": [
+      {
+        "name": "ip",
+        "label": "IP地址",
+        "type": "input",
+        "required": true,
+        "secret": false,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "port",
+        "label": "端口",
+        "type": "input",
+        "required": true,
+        "secret": false,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "apikey",
+        "label": "API KEY",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "proxy",
+        "label": "使用代理服务器",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "否"
+          },
+          {
+            "value": "1",
+            "label": "是"
+          }
+        ],
+        "visible_when": {
+          "proxy_available": "1"
+        }
+      }
+    ],
+    "capabilities": {
+      "status": true,
+      "redirect": false,
+      "logs": false,
+      "weight": false,
+      "client_pagination": true,
+      "create_domain": true,
+      "sort": false,
+      "remark": 2,
+      "groups": false,
+      "aliases": false,
+      "weight_groups": false
+    }
+  },
+  {
+    "id": "technitium",
+    "name": "Technitium",
+    "category": "dns",
+    "implemented": true,
+    "fields": [
+      {
+        "name": "url",
+        "label": "Server URL",
+        "type": "input",
+        "required": true,
+        "secret": false,
+        "default": "",
+        "placeholder": "http://127.0.0.1:5380"
+      },
+      {
+        "name": "token",
+        "label": "API Token",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "proxy",
+        "label": "使用代理服务器",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "否"
+          },
+          {
+            "value": "1",
+            "label": "是"
+          }
+        ],
+        "visible_when": {
+          "proxy_available": "1"
+        }
+      }
+    ],
+    "capabilities": {
+      "status": true,
+      "redirect": false,
+      "logs": false,
+      "weight": false,
+      "client_pagination": true,
+      "create_domain": true,
+      "sort": false,
+      "remark": 2,
+      "groups": false,
+      "aliases": false,
+      "weight_groups": false
+    }
+  },
+  {
+    "id": "aliyunesa",
+    "name": "阿里云ESA",
+    "category": "dns",
+    "implemented": true,
+    "fields": [
+      {
+        "name": "AccessKeyId",
+        "label": "AccessKeyId",
+        "type": "input",
+        "required": true,
+        "secret": false,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "AccessKeySecret",
+        "label": "AccessKeySecret",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "region",
+        "label": "API接入点",
+        "type": "select",
+        "required": true,
+        "secret": false,
+        "default": "cn-hangzhou",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "cn-hangzhou",
+            "label": "中国内地"
+          },
+          {
+            "value": "ap-southeast-1",
+            "label": "非中国内地"
+          }
+        ]
+      },
+      {
+        "name": "proxy",
+        "label": "使用代理服务器",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "否"
+          },
+          {
+            "value": "1",
+            "label": "是"
+          }
+        ],
+        "visible_when": {
+          "proxy_available": "1"
+        }
+      }
+    ],
+    "capabilities": {
+      "status": false,
+      "redirect": false,
+      "logs": false,
+      "weight": false,
+      "client_pagination": false,
+      "create_domain": false,
+      "sort": false,
+      "remark": 2,
+      "groups": false,
+      "aliases": false,
+      "weight_groups": false
+    }
+  },
+  {
+    "id": "tencenteo",
+    "name": "腾讯云EO",
+    "category": "dns",
+    "implemented": true,
+    "fields": [
+      {
+        "name": "SecretId",
+        "label": "SecretId",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "SecretKey",
+        "label": "SecretKey",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "site_type",
+        "label": "API接入点",
+        "type": "select",
+        "required": true,
+        "secret": false,
+        "default": "cn",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "cn",
+            "label": "中国内地"
+          },
+          {
+            "value": "intl",
+            "label": "非中国内地"
+          }
+        ]
+      },
+      {
+        "name": "proxy",
+        "label": "使用代理服务器",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "否"
+          },
+          {
+            "value": "1",
+            "label": "是"
+          }
+        ],
+        "visible_when": {
+          "proxy_available": "1"
+        }
+      }
+    ],
+    "capabilities": {
+      "status": true,
+      "redirect": false,
+      "logs": false,
+      "weight": true,
+      "client_pagination": false,
+      "create_domain": false,
+      "sort": true,
+      "remark": 0,
+      "groups": false,
+      "aliases": false,
+      "weight_groups": false
+    }
+  },
+  {
+    "id": "dnsmgr",
+    "name": "同系统对接",
+    "category": "dns",
+    "implemented": true,
+    "fields": [
+      {
+        "name": "base_url",
+        "label": "站点地址",
+        "type": "input",
+        "required": true,
+        "secret": false,
+        "default": "",
+        "placeholder": "例如：https://dns.example.com"
+      },
+      {
+        "name": "uid",
+        "label": "用户 ID",
+        "type": "input",
+        "required": true,
+        "secret": false,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "key",
+        "label": "API 密钥",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "proxy",
+        "label": "使用代理服务器",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "否"
+          },
+          {
+            "value": "1",
+            "label": "是"
+          }
+        ],
+        "visible_when": {
+          "proxy_available": "1"
+        }
+      }
+    ],
+    "capabilities": {
+      "status": true,
+      "redirect": true,
+      "logs": false,
+      "weight": true,
+      "client_pagination": false,
+      "create_domain": false,
+      "sort": false,
+      "remark": 2,
+      "groups": false,
+      "aliases": false,
+      "weight_groups": false
+    }
+  },
+  {
+    "id": "goedge",
+    "name": "GoEdge智能DNS",
+    "category": "dns",
+    "implemented": true,
+    "fields": [
+      {
+        "name": "base_url",
+        "label": "API节点地址",
+        "type": "input",
+        "required": true,
+        "secret": false,
+        "default": "",
+        "placeholder": "例如：https://api.example.com:8004"
+      },
+      {
+        "name": "accessKeyId",
+        "label": "AccessKey ID",
+        "type": "input",
+        "required": true,
+        "secret": false,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "accessKey",
+        "label": "AccessKey",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "type",
+        "label": "AccessKey类型",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "admin",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "admin",
+            "label": "管理员"
+          },
+          {
+            "value": "user",
+            "label": "用户"
+          }
+        ]
+      },
+      {
+        "name": "nsClusterId",
+        "label": "DNS集群ID",
+        "type": "input",
+        "required": true,
+        "secret": false,
+        "default": "",
+        "placeholder": "例如：1"
+      },
+      {
+        "name": "userId",
+        "label": "GoEdge用户ID（可选）",
+        "type": "input",
+        "required": false,
+        "secret": false,
+        "default": "",
+        "placeholder": "留空表示不指定用户"
+      },
+      {
+        "name": "proxy",
+        "label": "使用代理服务器",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "否"
+          },
+          {
+            "value": "1",
+            "label": "是"
+          }
+        ],
+        "visible_when": {
+          "proxy_available": "1"
+        }
+      }
+    ],
+    "capabilities": {
+      "status": true,
+      "redirect": false,
+      "logs": false,
+      "weight": true,
+      "client_pagination": false,
+      "create_domain": true,
+      "sort": false,
+      "remark": 2,
+      "groups": false,
+      "aliases": false,
+      "weight_groups": false
+    }
+  },
+  {
+    "id": "dynv6",
+    "name": "dynv6",
+    "category": "dns",
+    "implemented": true,
+    "fields": [
+      {
+        "name": "token",
+        "label": "API Token",
+        "type": "input",
+        "required": true,
+        "secret": true,
+        "default": "",
+        "placeholder": ""
+      },
+      {
+        "name": "proxy",
+        "label": "使用代理服务器",
+        "type": "radio",
+        "required": false,
+        "secret": false,
+        "default": "0",
+        "placeholder": "",
+        "options": [
+          {
+            "value": "0",
+            "label": "否"
+          },
+          {
+            "value": "1",
+            "label": "是"
+          }
+        ],
+        "visible_when": {
+          "proxy_available": "1"
+        }
+      }
+    ],
+    "capabilities": {
+      "status": false,
+      "redirect": false,
+      "logs": false,
+      "weight": false,
+      "client_pagination": false,
+      "create_domain": false,
+      "sort": false,
+      "remark": 0,
+      "groups": false,
+      "aliases": false,
+      "weight_groups": false
+    }
+  }
+]

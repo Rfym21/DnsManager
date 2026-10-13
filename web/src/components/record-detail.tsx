@@ -1,0 +1,8 @@
+import {useQuery} from '@tanstack/react-query';
+import {absoluteName} from '../lib/records';
+import {apiOperation} from '../lib/api';
+import type {DNSRecord} from '../lib/types';
+import {Button,Drawer,LoadingBoundary} from './ui';
+export function RecordDetail({domainID,domainName,record,onClose}:{domainID:string;domainName:string;record:DNSRecord;onClose:()=>void}){
+ const query=useQuery({queryKey:['record-detail',domainID,record.id],queryFn:({signal})=>apiOperation('get_api_v1_domains_id_records_record',{params:{id:domainID,record:record.id!},signal}),retry:false,staleTime:0});return <Drawer open onClose={onClose} title="解析记录详情" description={absoluteName(record.name,domainName)} footer={<Button pending={query.isFetching} onClick={()=>query.refetch()}>读取最新配置</Button>}><LoadingBoundary pending={query.isPending} error={query.error} hasData={!!query.data} retry={()=>query.refetch()}>{query.data&&<dl className="definition"><dt>平台记录 ID</dt><dd className="mono">{query.data.record.id}</dd><dt>类型</dt><dd>{query.data.record.type}</dd><dt>主机记录</dt><dd className="mono">{query.data.record.name}</dd><dt>记录值</dt><dd className="mono">{query.data.record.values?.join('\n')??query.data.record.value}</dd><dt>线路</dt><dd>{query.data.record.line??'默认'}</dd><dt>TTL</dt><dd>{query.data.record.ttl===1?'自动':query.data.record.ttl+' 秒'}</dd><dt>状态</dt><dd>{query.data.record.enabled?'启用':'暂停'}</dd><dt>代理</dt><dd>{query.data.record.proxied?'已开启':'关闭'}</dd><dt>优先级 / 权重</dt><dd>{query.data.record.priority??'—'} / {query.data.record.weight??'—'}</dd><dt>备注</dt><dd>{query.data.record.remark||'—'}</dd></dl>}</LoadingBoundary></Drawer>;
+}

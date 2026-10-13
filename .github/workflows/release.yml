@@ -1,0 +1,386 @@
+name: Build and Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [VERSION]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Read release version
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      build_version: ${{ steps.version.outputs.build_version }}
+      tag: ${{ steps.version.outputs.tag }}
+      image: ${{ steps.version.outputs.image }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v5
+
+      - name: Validate VERSION and release tag
+        id: version
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('node:fs');
+            const buildVersion = fs.readFileSync('VERSION', 'utf8').trim();
+            const version = buildVersion.replace(/^v/, '');
+            const number = '(0|[1-9][0-9]*)';
+            const identifier = '(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)';
+            const pattern = new RegExp(`^${number}\\.${number}(\\.${number})?(-${identifier}(\\.${identifier})*)?$`);
+            if (!pattern.test(version) || version.length > 127) {
+              throw new Error('VERSION must contain a version such as 2.21, 2.21.0 or v2.21.0-rc.1, without build metadata.');
+            }
+
+            const tag = `v${version}`;
+            let existingRef;
+            try {
+              const response = await github.rest.git.getRef({ ...context.repo, ref: `tags/${tag}` });
+              existingRef = response.data.object;
+            } catch (error) {
+              if (error.status !== 404) throw error;
+            }
+            while (existingRef?.type === 'tag') {
+              const response = await github.rest.git.getTag({ ...context.repo, tag_sha: existingRef.sha });
+              existingRef = response.data.object;
+            }
+            if (existingRef && existingRef.sha !== context.sha) {
+              throw new Error(`${tag} already points to another commit. Bump VERSION before publishing this commit.`);
+            }
+
+            core.setOutput('version', version);
+            core.setOutput('build_version', buildVersion);
+            core.setOutput('tag', tag);
+            core.setOutput('image', `ghcr.io/${context.repo.owner}/${context.repo.repo}`.toLowerCase());
+            core.setOutput('prerelease', String(version.includes('-')));
+
+  frontend:
+    name: Check and build embedded frontend
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v5
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '26'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check frontend
+        run: |
+          npm run lint
+          npm test
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Upload embedded frontend
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: server/internal/webui/dist/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 1
+
+  checks:
+    name: Check Go and database integrations
+    needs: frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: server
+        shell: bash
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: isolated-ci-password
+          MYSQL_ROOT_HOST: '%'
+        ports:
+          - 3306/tcp
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -p$MYSQL_ROOT_PASSWORD"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: dnsmgr_ci
+          POSTGRES_PASSWORD: isolated-ci-password
+        ports:
+          - 5432/tcp
+        options: >-
+          --health-cmd="pg_isready -U dnsmgr_ci"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v5
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: server/go.mod
+          cache-dependency-path: server/go.sum
+
+      - name: Download embedded frontend
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: server/internal/webui/dist/
+
+      - name: Download Go modules
+        run: go mod download
+
+      - name: Check Go and contracts
+        run: |
+          set -euo pipefail
+          go vet ./...
+          go run ./cmd/contracts --check
+          go test -race -p 1 ./... -count=1 -timeout 10m
+
+      - name: Prepare isolated database fixtures
+        env:
+          MYSQL_CONTAINER: ${{ job.services.mysql.id }}
+          POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+          MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+          POSTGRES_PORT: ${{ job.services.postgres.ports['5432'] }}
+        run: |
+          set -euo pipefail
+          fixture_dir="$RUNNER_TEMP/dnsmgr-database-tests"
+          mkdir -m 700 "$fixture_dir"
+          umask 077
+          for database in store api worker backup_source backup_target cli_source cli_target; do
+            docker exec -e MYSQL_PWD=isolated-ci-password "$MYSQL_CONTAINER" \
+              mysql -uroot -e "CREATE DATABASE dnsmgr_ci_${database} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+            printf 'root:isolated-ci-password@tcp(127.0.0.1:%s)/dnsmgr_ci_%s' \
+              "$MYSQL_PORT" "$database" > "$fixture_dir/mysql-$database"
+            docker exec "$POSTGRES_CONTAINER" createdb -U dnsmgr_ci "dnsmgr_ci_${database}"
+            printf 'postgres://dnsmgr_ci:isolated-ci-password@127.0.0.1:%s/dnsmgr_ci_%s?sslmode=disable' \
+              "$POSTGRES_PORT" "$database" > "$fixture_dir/postgres-$database"
+          done
+          echo "DATABASE_FIXTURE_DIR=$fixture_dir" >> "$GITHUB_ENV"
+
+      - name: Check MySQL and PostgreSQL integrations
+        run: |
+          set -euo pipefail
+          export TEST_POSTGRES_DATABASE_DSN_FILE="$DATABASE_FIXTURE_DIR/postgres-store"
+          for engine in mysql postgres; do
+            TEST_DATABASE_DSN_FILE="$DATABASE_FIXTURE_DIR/$engine-store" \
+              go test -race -p 1 ./internal/store -count=1 -timeout 10m
+            TEST_DATABASE_DSN_FILE="$DATABASE_FIXTURE_DIR/$engine-api" \
+              go test -race -p 1 ./internal/httpapi -count=1 -timeout 10m
+            TEST_DATABASE_DSN_FILE="$DATABASE_FIXTURE_DIR/$engine-worker" \
+              go test -race -p 1 ./internal/automation -count=1 -timeout 10m
+            BACKUP_TEST_SOURCE_DSN_FILE="$DATABASE_FIXTURE_DIR/$engine-backup_source" \
+            BACKUP_TEST_TARGET_DSN_FILE="$DATABASE_FIXTURE_DIR/$engine-backup_target" \
+              go test -race -p 1 ./internal/backup -count=1 -timeout 10m
+            BACKUP_CLI_SOURCE_DSN_FILE="$DATABASE_FIXTURE_DIR/$engine-cli_source" \
+            BACKUP_CLI_TARGET_DSN_FILE="$DATABASE_FIXTURE_DIR/$engine-cli_target" \
+              go test -race -p 1 ./cmd/dnsmgr -count=1 -timeout 10m
+          done
+
+  binaries:
+    name: Build ${{ matrix.goos }}/${{ matrix.goarch }}
+    needs: [prepare, frontend, checks]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        goos: [linux, darwin, windows]
+        goarch: [amd64, arm64]
+    env:
+      CGO_ENABLED: '0'
+      GOWORK: 'off'
+      RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+      BUILD_VERSION: ${{ needs.prepare.outputs.build_version }}
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v5
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: server/go.mod
+          cache-dependency-path: server/go.sum
+
+      - name: Download Go modules
+        working-directory: server
+        run: go mod download
+
+      - name: Download embedded frontend
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: server/internal/webui/dist/
+
+      - name: Compile binary and package release
+        shell: bash
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: |
+          set -euo pipefail
+          package="dnsmgr_${RELEASE_VERSION}_${GOOS}_${GOARCH}"
+          binary=dnsmgr
+          if [[ "$GOOS" == windows ]]; then binary=dnsmgr.exe; fi
+          mkdir -p "build/$package" dist
+          (cd server && go build -trimpath -buildvcs=false \
+            -ldflags="-s -w -X main.version=$BUILD_VERSION" \
+            -o "../build/$package/$binary" ./cmd/dnsmgr)
+          cp VERSION README.md UPSTREAM_COMMIT "build/$package/"
+          cp server/.env.example "build/$package/config.env.example"
+          for notice in LICENSE NOTICE THIRD-PARTY-LICENSES.md; do
+            if [[ -f "$notice" ]]; then cp "$notice" "build/$package/"; fi
+          done
+          if [[ "$GOOS" == windows ]]; then
+            (cd build && zip -r "../dist/$package.zip" "$package")
+          else
+            tar -C build -czf "dist/$package.tar.gz" "$package"
+          fi
+
+      - name: Upload release archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: dnsmgr-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 7
+
+  docker:
+    name: Publish GHCR image
+    needs: [prepare, binaries]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v5
+
+      - name: Download Linux release archives
+        uses: actions/download-artifact@v4
+        with:
+          pattern: dnsmgr-linux-*
+          merge-multiple: true
+          path: build/docker-archives/
+
+      - name: Prepare Docker runtime files
+        shell: bash
+        env:
+          RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          set -euo pipefail
+          for arch in amd64 arm64; do
+            package="dnsmgr_${RELEASE_VERSION}_linux_${arch}"
+            mkdir -p "build/docker-context/$arch"
+            tar -xzf "build/docker-archives/$package.tar.gz" \
+              -C "build/docker-context/$arch" --strip-components=1
+            test -s "build/docker-context/$arch/dnsmgr"
+          done
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate image tags and labels
+        id: metadata
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ needs.prepare.outputs.image }}
+          flavor: latest=false
+          tags: |
+            type=raw,value=${{ needs.prepare.outputs.version }}
+            type=raw,value=${{ needs.prepare.outputs.tag }}
+            type=sha,format=long
+            type=raw,value=latest,enable=${{ needs.prepare.outputs.prerelease == 'false' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./build/docker-context
+          file: ./.github/docker/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.metadata.outputs.tags }}
+          labels: ${{ steps.metadata.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  release:
+    name: Publish GitHub Release
+    needs: [prepare, binaries, docker]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Download release archives
+        uses: actions/download-artifact@v4
+        with:
+          pattern: dnsmgr-*
+          merge-multiple: true
+          path: dist/
+
+      - name: Generate SHA256 checksums
+        working-directory: dist
+        run: sha256sum *.tar.gz *.zip > checksums.txt
+
+      - name: Create or update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.prepare.outputs.tag }}
+          name: DNS Manager ${{ needs.prepare.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          prerelease: ${{ needs.prepare.outputs.prerelease == 'true' }}
+          make_latest: ${{ needs.prepare.outputs.prerelease == 'false' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: dist/*
+          body: |
+            Docker image (linux/amd64 and linux/arm64):
+
+            ```sh
+            docker pull ${{ needs.prepare.outputs.image }}:${{ needs.prepare.outputs.version }}
+            ```
+
+            Download the archive for your OS (Linux, macOS or Windows) and architecture (amd64 or arm64).
+            The executable includes the frontend. Configure a MySQL, PostgreSQL or SQLite DSN and run `dnsmgr migrate` before starting API and Worker.
+            Each archive includes VERSION, README.md, config.env.example and UPSTREAM_COMMIT, plus license notices if present.
+            Verify downloads using `sha256sum --ignore-missing -c checksums.txt`.

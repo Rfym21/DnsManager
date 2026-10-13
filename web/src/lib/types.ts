@@ -1,0 +1,11 @@
+export interface User { id:string; username:string; role:'admin'|'restricted'|'domain'; enabled:boolean; totp_enabled:boolean; preferences?:Record<string,unknown>; }
+export interface Session { user:User; csrf_token:string; domain_id?:string; permissions?:string[]; }
+export interface List<T> { items:T[]; pagination?:{total?:number;page?:number;page_size?:number}; fetched_at?:string; }
+export interface FieldSpec { name:string;label:string;type?:string;required?:boolean;secret?:boolean;default?:string;placeholder?:string;help?:string;options?:{value:string;label:string}[];visible_when?:Record<string,string>|{field:string;equals:string;not?:boolean}[][]; }
+export interface Provider { id:string;name:string;category:string;implemented:boolean;fields:FieldSpec[];capabilities?:Record<string,unknown>;target_fields?:FieldSpec[]; }
+export interface Account { id:string;name:string;provider:string;remark:string;status:string;last_error?:string;created_at:string; }
+export interface Domain { id:string;name:string;ascii_name:string;account_id:string;provider_domain_id:string;provider:string;category:string;remark:string;hidden?:boolean;quicklogin_enabled?:boolean;permissions?:string[]; }
+export interface DNSRecord { id?:string;type:string;name:string;value:string;values?:string[];ttl:number;line?:string;enabled:boolean;priority?:number;weight?:number;remark?:string;proxied:boolean;version?:string;metadata?:Record<string,unknown>; }
+export interface RecordList extends List<DNSRecord> { capabilities?:Record<string,unknown>; lines?:{id:string;name:string}[];min_ttl?:number; }
+export interface ResourceObject {id:string;kind:string;name:string;domain_id?:string;owner_id:string;data:Record<string,any>;version:number;active:boolean;created_at:string;updated_at:string;}
+export interface Job {id:string;kind?:string;name?:string;state:string;attempt?:number;max_attempts?:number;next_run_at?:string;progress?:number;total?:number;processed?:number;completed?:number;error_message?:string;error_code?:string;result?:Record<string,unknown>;resource_id?:string;owner_id?:string;phase?:string;message?:string;error?:string;created_at:string;updated_at?:string;items?:{id?:string;name?:string;state:string;error?:string}[];logs?:{time?:string;level?:string;message:string}[];}
